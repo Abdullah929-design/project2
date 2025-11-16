@@ -27,7 +27,10 @@ import {
   Tooltip,
   Chip,
   Avatar,
-  LinearProgress
+  LinearProgress,
+  Stack,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
 import {
   Add as AddIcon,
@@ -65,6 +68,8 @@ const themeColors = {
 const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const MealTracker = ({ userId }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [meals, setMeals] = useState([]);
   const [foodItems, setFoodItems] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -314,35 +319,50 @@ const MealTracker = ({ userId }) => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <Box sx={{ p: 3, backgroundColor: '#fff' }}>
+      <Box sx={{ p: { xs: 1, sm: 2, md: 3 }, backgroundColor: '#fff' }}>
         {/* Header Section */}
         <Box sx={{ 
           display: 'flex', 
+          flexDirection: { xs: 'column', md: 'row' },
           justifyContent: 'space-between', 
-          alignItems: 'center', 
+          alignItems: { xs: 'flex-start', md: 'center' }, 
           mb: 3,
           p: 2,
           borderRadius: 2,
           backgroundColor: themeColors.lightBg,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          gap: { xs: 2, md: 0 }
         }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <RestaurantIcon sx={{ fontSize: 40, color: themeColors.primary, mr: 2 }} />
+            <RestaurantIcon sx={{ fontSize: { xs: 32, md: 40 }, color: themeColors.primary, mr: 2 }} />
             <Typography variant="h4" component="h1" sx={{ 
               fontWeight: 'bold',
               color: themeColors.text,
               background: `linear-gradient(45deg, ${themeColors.primary}, ${themeColors.secondary})`,
               WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent'
+              WebkitTextFillColor: 'transparent',
+              fontSize: { xs: '1.5rem', md: '2.125rem' }
             }}>
               Meal Tracker
             </Typography>
           </Box>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: 1,
+            flexWrap: 'wrap',
+            width: { xs: '100%', md: 'auto' },
+            '& > button': {
+              flex: { xs: '1 1 auto', md: '0 0 auto' },
+              minWidth: { xs: 'auto', md: 'auto' },
+              fontSize: { xs: '0.75rem', md: '0.875rem' },
+              padding: { xs: '6px 12px', md: '8px 16px' }
+            }
+          }}>
             <Button
               variant="contained"
               color="primary"
-              startIcon={<BarChartIcon />}
+              startIcon={<BarChartIcon sx={{ fontSize: { xs: 18, md: 20 } }} />}
               onClick={() => {
                 setOpenDialog(false);
                 setOpenGoalsDialog(false);
@@ -353,11 +373,12 @@ const MealTracker = ({ userId }) => {
                 '&:hover': { backgroundColor: themeColors.secondary }
               }}
             >
-              View Report
+              <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>View Report</Box>
+              <Box component="span" sx={{ display: { xs: 'inline', sm: 'none' } }}>Report</Box>
             </Button>
             <Button
               variant="outlined"
-              startIcon={<GoalsIcon />}
+              startIcon={<GoalsIcon sx={{ fontSize: { xs: 18, md: 20 } }} />}
               onClick={() => {
                 setOpenDialog(false);
                 setOpenReportDialog(false);
@@ -372,12 +393,13 @@ const MealTracker = ({ userId }) => {
                 }
               }}
             >
-              Nutrition Goals
+              <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>Goals</Box>
+              <Box component="span" sx={{ display: { xs: 'inline', sm: 'none' } }}>Goals</Box>
             </Button>
             <Button
               variant="contained"
               color="success"
-              startIcon={<AddIcon />}
+              startIcon={<AddIcon sx={{ fontSize: { xs: 18, md: 20 } }} />}
               onClick={handleAddMeal}
               sx={{
                 backgroundColor: themeColors.accent,
@@ -392,6 +414,7 @@ const MealTracker = ({ userId }) => {
         {/* Date Navigation */}
         <Box sx={{ 
           display: 'flex', 
+          flexDirection: { xs: 'column', sm: 'row' },
           justifyContent: 'center', 
           alignItems: 'center', 
           mb: 3, 
@@ -409,7 +432,8 @@ const MealTracker = ({ userId }) => {
               '&:hover': { 
                 backgroundColor: themeColors.lightBg,
                 borderColor: themeColors.secondary 
-              }
+              },
+              width: { xs: '100%', sm: 'auto' }
             }}
           >
             Previous
@@ -421,6 +445,7 @@ const MealTracker = ({ userId }) => {
               <TextField 
                 {...params} 
                 sx={{
+                  width: { xs: '100%', sm: 'auto' },
                   '& .MuiOutlinedInput-root': {
                     '& fieldset': {
                       borderColor: themeColors.primary,
@@ -447,7 +472,8 @@ const MealTracker = ({ userId }) => {
               '&:disabled': {
                 color: '#ccc',
                 borderColor: '#ccc'
-              }
+              },
+              width: { xs: '100%', sm: 'auto' }
             }}
           >
             Next
@@ -486,35 +512,101 @@ const MealTracker = ({ userId }) => {
             </Button>
           </Paper>
         ) : (
-          <TableContainer 
-            component={Paper} 
-            sx={{ 
-              mb: 3,
-              borderRadius: 2,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-            }}
-          >
-            <Table>
-              <TableHead>
-                <TableRow sx={{ backgroundColor: themeColors.lightBg }}>
-                  <TableCell sx={{ fontWeight: 'bold', color: themeColors.text }}>Meal Type</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', color: themeColors.text }}>Food</TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 'bold', color: themeColors.text }}>Servings</TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 'bold', color: themeColors.text }}>Calories</TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 'bold', color: themeColors.text }}>Carbs (g)</TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 'bold', color: themeColors.text }}>Protein (g)</TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 'bold', color: themeColors.text }}>Fat (g)</TableCell>
-                  <TableCell align="center" sx={{ fontWeight: 'bold', color: themeColors.text }}>Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
+          <>
+            <Box sx={{ 
+              display: { xs: 'none', md: 'block' },
+              mb: 3
+            }}>
+              <TableContainer 
+                component={Paper} 
+                sx={{ 
+                  borderRadius: 2,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                  overflowX: 'auto'
+                }}
+              >
+                <Table>
+                  <TableHead>
+                    <TableRow sx={{ backgroundColor: themeColors.lightBg }}>
+                      <TableCell sx={{ fontWeight: 'bold', color: themeColors.text }}>Meal Type</TableCell>
+                      <TableCell sx={{ fontWeight: 'bold', color: themeColors.text }}>Food</TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 'bold', color: themeColors.text }}>Servings</TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 'bold', color: themeColors.text }}>Calories</TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 'bold', color: themeColors.text }}>Carbs (g)</TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 'bold', color: themeColors.text }}>Protein (g)</TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 'bold', color: themeColors.text }}>Fat (g)</TableCell>
+                      <TableCell align="center" sx={{ fontWeight: 'bold', color: themeColors.text }}>Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {meals.map((meal) => (
+                      <TableRow 
+                        key={meal.id}
+                        hover
+                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                      >
+                        <TableCell>
+                          <Chip
+                            label={getMealTypeName(meal.meal_type)}
+                            sx={{
+                              backgroundColor: getMealTypeColor(meal.meal_type),
+                              color: '#fff',
+                              fontWeight: 'bold'
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <RestaurantIcon sx={{ color: themeColors.primary, mr: 1 }} />
+                            <Typography>{meal.food_name || meal.custom_name}</Typography>
+                          </Box>
+                        </TableCell>
+                        <TableCell align="right">{meal.servings}</TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 'bold' }}>{meal.calories || '-'}</TableCell>
+                        <TableCell align="right">{meal.carbs || '-'}</TableCell>
+                        <TableCell align="right">{meal.protein || '-'}</TableCell>
+                        <TableCell align="right">{meal.fat || '-'}</TableCell>
+                        <TableCell align="center">
+                          <Tooltip title="Edit">
+                            <IconButton 
+                              onClick={() => handleEditMeal(meal)}
+                              sx={{ color: themeColors.primary }}
+                            >
+                              <EditIcon />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Delete">
+                            <IconButton 
+                              onClick={() => handleDeleteMeal(meal.id)}
+                              sx={{ color: themeColors.error }}
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                          </Tooltip>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Box>
+
+            {/* Mobile Card View */}
+            <Box sx={{ 
+              display: { xs: 'block', md: 'none' },
+              mb: 3
+            }}>
+              <Stack spacing={2}>
                 {meals.map((meal) => (
-                  <TableRow 
+                  <Card 
                     key={meal.id}
-                    hover
-                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    sx={{ 
+                      borderRadius: 2,
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                      p: 2
+                    }}
                   >
-                    <TableCell>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
                       <Chip
                         label={getMealTypeName(meal.meal_type)}
                         sx={{
@@ -523,41 +615,60 @@ const MealTracker = ({ userId }) => {
                           fontWeight: 'bold'
                         }}
                       />
-                    </TableCell>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <RestaurantIcon sx={{ color: themeColors.primary, mr: 1 }} />
-                        <Typography>{meal.food_name || meal.custom_name}</Typography>
+                      <Box>
+                        <Tooltip title="Edit">
+                          <IconButton 
+                            onClick={() => handleEditMeal(meal)}
+                            sx={{ color: themeColors.primary, mr: 1 }}
+                            size="small"
+                          >
+                            <EditIcon />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Delete">
+                          <IconButton 
+                            onClick={() => handleDeleteMeal(meal.id)}
+                            sx={{ color: themeColors.error }}
+                            size="small"
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </Tooltip>
                       </Box>
-                    </TableCell>
-                    <TableCell align="right">{meal.servings}</TableCell>
-                    <TableCell align="right" sx={{ fontWeight: 'bold' }}>{meal.calories || '-'}</TableCell>
-                    <TableCell align="right">{meal.carbs || '-'}</TableCell>
-                    <TableCell align="right">{meal.protein || '-'}</TableCell>
-                    <TableCell align="right">{meal.fat || '-'}</TableCell>
-                    <TableCell align="center">
-                      <Tooltip title="Edit">
-                        <IconButton 
-                          onClick={() => handleEditMeal(meal)}
-                          sx={{ color: themeColors.primary }}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Delete">
-                        <IconButton 
-                          onClick={() => handleDeleteMeal(meal.id)}
-                          sx={{ color: themeColors.error }}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </Tooltip>
-                    </TableCell>
-                  </TableRow>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                      <RestaurantIcon sx={{ color: themeColors.primary, mr: 1 }} />
+                      <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                        {meal.food_name || meal.custom_name}
+                      </Typography>
+                    </Box>
+                    <Grid container spacing={2}>
+                      <Grid item xs={6}>
+                        <Typography variant="body2" color="textSecondary">Servings</Typography>
+                        <Typography variant="body1" fontWeight="bold">{meal.servings}</Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography variant="body2" color="textSecondary">Calories</Typography>
+                        <Typography variant="body1" fontWeight="bold">{meal.calories || '-'}</Typography>
+                      </Grid>
+                      <Grid item xs={4}>
+                        <Typography variant="body2" color="textSecondary">Carbs</Typography>
+                        <Typography variant="body1" fontWeight="bold">{meal.carbs || '-'}g</Typography>
+                      </Grid>
+                      <Grid item xs={4}>
+                        <Typography variant="body2" color="textSecondary">Protein</Typography>
+                        <Typography variant="body1" fontWeight="bold">{meal.protein || '-'}g</Typography>
+                      </Grid>
+                      <Grid item xs={4}>
+                        <Typography variant="body2" color="textSecondary">Fat</Typography>
+                        <Typography variant="body1" fontWeight="bold">{meal.fat || '-'}g</Typography>
+                      </Grid>
+                    </Grid>
+                  </Card>
                 ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+              </Stack>
+            </Box>
+          </>
         )}
 
         {/* Quick Stats */}
@@ -759,7 +870,8 @@ const MealTracker = ({ userId }) => {
           onClose={() => setOpenDialog(false)} 
           fullWidth 
           maxWidth="sm"
-          PaperProps={{ sx: { borderRadius: 2 } }}
+          fullScreen={isMobile}
+          PaperProps={{ sx: { borderRadius: { xs: 0, sm: 2 }, m: { xs: 0, sm: 2 } } }}
           disableEnforceFocus={false}
           disableAutoFocus={false}
         >
@@ -951,7 +1063,8 @@ const MealTracker = ({ userId }) => {
           onClose={() => setOpenGoalsDialog(false)} 
           fullWidth 
           maxWidth="sm"
-          PaperProps={{ sx: { borderRadius: 2 } }}
+          fullScreen={isMobile}
+          PaperProps={{ sx: { borderRadius: { xs: 0, sm: 2 }, m: { xs: 0, sm: 2 } } }}
           disableEnforceFocus={false}
           disableAutoFocus={false}
         >
@@ -1097,7 +1210,8 @@ const MealTracker = ({ userId }) => {
           onClose={() => setOpenReportDialog(false)}
           fullWidth
           maxWidth="md"
-          PaperProps={{ sx: { borderRadius: 2 } }}
+          fullScreen={isMobile}
+          PaperProps={{ sx: { borderRadius: { xs: 0, sm: 2 }, m: { xs: 0, sm: 2 } } }}
           disableEnforceFocus={false}
           disableAutoFocus={false}
         >
