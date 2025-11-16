@@ -3,6 +3,11 @@
   command = "npm run build"
   publish = "build"
 
+# Set Node version to 18 for compatibility with react-scripts
+# Netlify will use .nvmrc if present, or you can set it here
+[build.environment]
+  NODE_VERSION = "18.20.4"
+
 # SPA (Single Page Application) routing - handles React Router
 [[redirects]]
   from = "/*"

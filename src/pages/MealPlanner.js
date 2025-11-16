@@ -89,7 +89,18 @@ const MealTracker = ({ userId }) => {
     meal_type: 'breakfast'
   });
 
-  // ---- FIXED: useCallback-stable fetches ----
+  // --- fetch functions: fetchDailyReport FIRST ---
+  const fetchDailyReport = React.useCallback(async (date) => {
+    try {
+      const response = await axios.get(`${API_BASE}/reports/daily`, {
+        params: { user_id: userId, date }
+      });
+      setDailyReport(response.data);
+    } catch (error) {
+      console.error('Error fetching daily report:', error);
+    }
+  }, [userId]);
+
   const fetchMeals = React.useCallback(async () => {
     try {
       setLoading(true);
@@ -146,17 +157,6 @@ const MealTracker = ({ userId }) => {
     }, 300);
     return () => clearTimeout(delayDebounceFn);
   }, [searchQuery, fetchFoodItems]);
-
-  const fetchDailyReport = React.useCallback(async (date) => {
-    try {
-      const response = await axios.get(`${API_BASE}/reports/daily`, {
-        params: { user_id: userId, date }
-      });
-      setDailyReport(response.data);
-    } catch (error) {
-      console.error('Error fetching daily report:', error);
-    }
-  }, [userId]);
 
   const handleAddMeal = () => {
     // Close other dialogs first
