@@ -19,7 +19,6 @@ import {
   DialogContent,
   DialogActions,
   InputAdornment,
-  Divider,
   CircularProgress,
   Grid,
   Card,
@@ -36,7 +35,6 @@ import {
   Edit as EditIcon,
   Search as SearchIcon,
   BarChart as BarChartIcon,
-  Settings as SettingsIcon,
   Close as CloseIcon,
   Restaurant as RestaurantIcon,
   LocalDining as MealTypeIcon,
@@ -93,22 +91,24 @@ const MealTracker = ({ userId }) => {
 
   // Fetch meals and goals
   useEffect(() => {
-    if (userId) {
-      fetchMeals();
-      fetchUserGoals();
-    }
-  }, [userId, selectedDate]);
+  if (userId) {
+    fetchMeals();
+    fetchUserGoals();
+  }
+}, [userId, selectedDate, fetchMeals, fetchUserGoals]);
+
 
   // Fetch food items when search query changes
   useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      if (searchQuery.length > 2) {
-        fetchFoodItems();
-      }
-    }, 300);
+  const delayDebounceFn = setTimeout(() => {
+    if (searchQuery.length > 2) {
+      fetchFoodItems();
+    }
+  }, 300);
 
-    return () => clearTimeout(delayDebounceFn);
-  }, [searchQuery]);
+  return () => clearTimeout(delayDebounceFn);
+}, [searchQuery, fetchFoodItems]);
+
 
   const fetchMeals = async () => {
     try {
@@ -276,7 +276,6 @@ const MealTracker = ({ userId }) => {
     if (!dailyReport?.totals) return null;
     
     const { total_carbs, total_protein, total_fat } = dailyReport.totals;
-    const total = total_carbs + total_protein + total_fat;
     
     return {
       labels: ['Carbs', 'Protein', 'Fat'],

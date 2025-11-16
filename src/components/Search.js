@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Stack, Typography, TextField, Button, CircularProgress, Pagination, PaginationItem } from '@mui/material';
-import Gym from '../assets/icons/gym.png';
 import { styled } from '@mui/material/styles';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 
