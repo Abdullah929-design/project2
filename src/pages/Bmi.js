@@ -7,42 +7,6 @@ function Bmi() {
   const [message, setMessage] = useState('');
   const [nutritionData, setNutritionData] = useState(null);
 
-  const calcBmi = () => {
-    // Reset previous results
-    setNutritionData(null);
-    
-    // Check if weight and height are valid numbers
-    if (isNaN(weight) || isNaN(height) || weight === '' || height === '') {
-      setMessage("Please enter a valid weight and height");
-      setBmi('');
-      return;
-    }
-
-    // Check if weight and height are positive
-    if (weight <= 0 || height <= 0) {
-      setMessage("Please enter a positive weight and height");
-      setBmi('');
-      return;
-    }
-
-    const heightInMeters = height * 0.0254;
-    const bmiValue = weight / (heightInMeters * heightInMeters);
-    setBmi(bmiValue.toFixed(1));
-
-    if (bmiValue < 18.5) {
-      setMessage('You are Underweight');
-    } else if (bmiValue >= 18.5 && bmiValue < 25) {
-      setMessage('You are Normal')
-    } else if (bmiValue >= 25 && bmiValue < 30) {
-      setMessage('You are Overweight')
-    } else {
-      setMessage('You are Obese')
-    }
-
-    // Generate nutrition recommendations based on BMI
-    generateNutritionRecommendations(bmiValue, parseFloat(weight), parseFloat(height));
-  }
-
   const generateNutritionRecommendations = (bmiValue, weightKg, heightInches) => {
     const heightCm = heightInches * 2.54;
     
@@ -81,6 +45,42 @@ function Bmi() {
         fats: fatsGrams
       }
     });
+  };
+
+  const calcBmi = () => {
+    // Reset previous results
+    setNutritionData(null);
+    
+    // Check if weight and height are valid numbers
+    if (isNaN(weight) || isNaN(height) || weight === '' || height === '') {
+      setMessage("Please enter a valid weight and height");
+      setBmi('');
+      return;
+    }
+
+    // Check if weight and height are positive
+    if (weight <= 0 || height <= 0) {
+      setMessage("Please enter a positive weight and height");
+      setBmi('');
+      return;
+    }
+
+    const heightInMeters = height * 0.0254;
+    const bmiValue = weight / (heightInMeters * heightInMeters);
+    setBmi(bmiValue.toFixed(1));
+
+    if (bmiValue < 18.5) {
+      setMessage('You are Underweight');
+    } else if (bmiValue >= 18.5 && bmiValue < 25) {
+      setMessage('You are Normal')
+    } else if (bmiValue >= 25 && bmiValue < 30) {
+      setMessage('You are Overweight')
+    } else {
+      setMessage('You are Obese')
+    }
+
+    // Generate nutrition recommendations based on BMI
+    generateNutritionRecommendations(bmiValue, parseFloat(weight), parseFloat(height));
   }
 
   const reload = () => {

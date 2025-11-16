@@ -140,6 +140,34 @@ const Search = () => {
     fetchBodyParts();
   }, []);
 
+  const fetchYouTubeVideo = async (exerciseName) => {
+    try {
+      const query = `${exerciseName} exercise tutorial how to`;
+      const response = await fetch(
+        `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=3&type=video&q=${encodeURIComponent(query)}&key=${YOUTUBE_API_KEY}&order=relevance&videoDuration=medium`
+      );
+      
+      if (!response.ok) {
+        console.error(`YouTube API error! Status: ${response.status}`);
+        return null;
+      }
+      
+      const data = await response.json();
+      
+      if (!data.items || data.items.length === 0) {
+        console.log(`No YouTube videos found for: ${exerciseName}`);
+        return null;
+      }
+      
+      const videoId = data.items[0]?.id?.videoId;
+      console.log(`Found video for ${exerciseName}: ${videoId}`);
+      return videoId || null;
+    } catch (err) {
+      console.error("Failed to fetch YouTube video:", err);
+      return null;
+    }
+  };
+
   // Enhanced function to fetch exercises with multiple endpoints
   const fetchExercises = async (searchTerm, bodyPart) => {
     try {
@@ -284,34 +312,6 @@ const Search = () => {
       console.error("Search error:", err);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const fetchYouTubeVideo = async (exerciseName) => {
-    try {
-      const query = `${exerciseName} exercise tutorial how to`;
-      const response = await fetch(
-        `https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=3&type=video&q=${encodeURIComponent(query)}&key=${YOUTUBE_API_KEY}&order=relevance&videoDuration=medium`
-      );
-      
-      if (!response.ok) {
-        console.error(`YouTube API error! Status: ${response.status}`);
-        return null;
-      }
-      
-      const data = await response.json();
-      
-      if (!data.items || data.items.length === 0) {
-        console.log(`No YouTube videos found for: ${exerciseName}`);
-        return null;
-      }
-      
-      const videoId = data.items[0]?.id?.videoId;
-      console.log(`Found video for ${exerciseName}: ${videoId}`);
-      return videoId || null;
-    } catch (err) {
-      console.error("Failed to fetch YouTube video:", err);
-      return null;
     }
   };
 
