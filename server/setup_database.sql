@@ -1,20 +1,3 @@
--- ============================================
--- PostgreSQL Database Setup for Meal Planner
--- Database Name: mealsdb
--- ============================================
-
--- Step 1: Create the database (run this in PostgreSQL as superuser)
--- CREATE DATABASE mealsdb;
-
--- Step 2: Connect to mealsdb database
--- \c mealsdb
-
--- ============================================
--- Create Tables
--- ============================================
-
--- Table 1: food_items
--- Stores the food database with nutrition information
 CREATE TABLE IF NOT EXISTS food_items (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -265,13 +248,5 @@ INSERT INTO food_items (name, serving_size, calories, carbs, protein, fat) VALUE
 ('Wine Red', '5 oz', 125, 4, 0.1, 0),
 ('Wine White', '5 oz', 121, 4, 0.1, 0);
 
--- ============================================
--- Verify Tables Created
--- ============================================
 
--- Run these to verify:
--- \dt                    -- List all tables
--- SELECT * FROM food_items LIMIT 5;
--- SELECT * FROM user_meals;
--- SELECT * FROM user_goals;
 
