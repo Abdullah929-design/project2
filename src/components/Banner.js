@@ -22,7 +22,9 @@ const Banner = () => {
           width: { xs: '100%', md: '50%' },
           height: '100%',
           minHeight: '100vh',
-          zIndex: 0
+          zIndex: 0,
+          opacity: { xs: 0.4, md: 1 },
+          transition: 'opacity 0.3s ease'
       }}>
         <img 
            src={bannerImage}
