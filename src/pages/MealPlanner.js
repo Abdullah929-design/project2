@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import {
   Box,
@@ -104,7 +104,7 @@ const MealTracker = ({ userId }) => {
     } finally {
       setLoading(false);
     }
-  }, [selectedDate, userId]);
+  }, [selectedDate, userId, fetchDailyReport]);
 
   const fetchUserGoals = React.useCallback(async () => {
     try {
@@ -147,7 +147,7 @@ const MealTracker = ({ userId }) => {
     return () => clearTimeout(delayDebounceFn);
   }, [searchQuery, fetchFoodItems]);
 
-  const fetchDailyReport = async (date) => {
+  const fetchDailyReport = React.useCallback(async (date) => {
     try {
       const response = await axios.get(`${API_BASE}/reports/daily`, {
         params: { user_id: userId, date }
@@ -156,7 +156,7 @@ const MealTracker = ({ userId }) => {
     } catch (error) {
       console.error('Error fetching daily report:', error);
     }
-  };
+  }, [userId]);
 
   const handleAddMeal = () => {
     // Close other dialogs first
