@@ -1,0 +1,277 @@
+-- ============================================
+-- PostgreSQL Database Setup for Meal Planner
+-- Database Name: mealsdb
+-- ============================================
+
+-- Step 1: Create the database (run this in PostgreSQL as superuser)
+-- CREATE DATABASE mealsdb;
+
+-- Step 2: Connect to mealsdb database
+-- \c mealsdb
+
+-- ============================================
+-- Create Tables
+-- ============================================
+
+-- Table 1: food_items
+-- Stores the food database with nutrition information
+CREATE TABLE IF NOT EXISTS food_items (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    serving_size VARCHAR(100),
+    calories NUMERIC(10, 2) NOT NULL DEFAULT 0,
+    carbs NUMERIC(10, 2) NOT NULL DEFAULT 0,
+    protein NUMERIC(10, 2) NOT NULL DEFAULT 0,
+    fat NUMERIC(10, 2) NOT NULL DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table 2: user_meals
+-- Stores user meal entries
+CREATE TABLE IF NOT EXISTS user_meals (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    food_id INTEGER REFERENCES food_items(id) ON DELETE SET NULL,
+    custom_name VARCHAR(255),
+    servings NUMERIC(5, 2) NOT NULL DEFAULT 1.0,
+    meal_type VARCHAR(20) NOT NULL CHECK (meal_type IN ('breakfast', 'lunch', 'dinner', 'snack')),
+    date DATE NOT NULL,
+    calories INTEGER,
+    carbs NUMERIC(10, 2),
+    protein NUMERIC(10, 2),
+    fat NUMERIC(10, 2),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Table 3: user_goals
+-- Stores user nutrition goals
+CREATE TABLE IF NOT EXISTS user_goals (
+    user_id INTEGER PRIMARY KEY,
+    daily_calories INTEGER NOT NULL DEFAULT 2000,
+    daily_carbs INTEGER NOT NULL DEFAULT 250,
+    daily_protein INTEGER NOT NULL DEFAULT 150,
+    daily_fat INTEGER NOT NULL DEFAULT 65,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ============================================
+-- Create Indexes for Better Performance
+-- ============================================
+
+CREATE INDEX IF NOT EXISTS idx_user_meals_user_date ON user_meals(user_id, date);
+CREATE INDEX IF NOT EXISTS idx_user_meals_date ON user_meals(date);
+CREATE INDEX IF NOT EXISTS idx_food_items_name ON food_items(name);
+CREATE INDEX IF NOT EXISTS idx_user_meals_meal_type ON user_meals(meal_type);
+
+-- ============================================
+-- Insert Sample Data (Optional)
+-- ============================================
+
+-- Food items database (200 items)
+-- Note: If you run this multiple times, duplicate entries may be created
+-- To avoid duplicates, you can DELETE FROM food_items; first, then run INSERT
+INSERT INTO food_items (name, serving_size, calories, carbs, protein, fat) VALUES
+('Chicken Breast', '100g', 165, 0, 31, 3.6),
+('Brown Rice', '1 cup cooked', 216, 45, 5, 1.8),
+('Broccoli', '1 cup', 55, 11, 4, 0.6),
+('Salmon', '100g', 208, 0, 25, 12),
+('Sweet Potato', '100g', 86, 20, 1.6, 0.1),
+('Greek Yogurt', '100g', 59, 3.6, 10, 0.4),
+('Eggs', '1 large', 72, 0.4, 6.3, 4.8),
+('Oatmeal', '1 cup cooked', 166, 28, 6, 3.6),
+('Banana', '1 medium', 105, 27, 1.3, 0.4),
+('Whole Wheat Bread', '1 slice', 81, 13.8, 4, 1.2),
+('Avocado', '100g', 160, 8.5, 2, 14.7),
+('Spinach', '1 cup raw', 7, 1.1, 0.9, 0.1),
+('Quinoa', '1 cup cooked', 222, 39, 8, 3.6),
+('Almonds', '1 oz (28g)', 164, 6.1, 6, 14.2),
+('Apple', '1 medium', 95, 25, 0.5, 0.3),
+('Turkey Breast', '100g', 135, 0, 30, 1),
+('Tuna', '100g', 144, 0, 30, 0.5),
+('White Rice', '1 cup cooked', 205, 45, 4.3, 0.4),
+('Carrots', '1 cup', 50, 12, 1, 0.2),
+('Tomatoes', '1 cup', 32, 7, 1.6, 0.4),
+('Bell Peppers', '1 cup', 30, 7, 1, 0.3),
+('Cucumber', '1 cup', 16, 4, 0.7, 0.1),
+('Lettuce', '1 cup', 5, 1, 0.5, 0.1),
+('Mushrooms', '1 cup', 15, 2.3, 2.2, 0.3),
+('Onions', '1 cup', 64, 15, 1.8, 0.2),
+('Garlic', '1 clove', 4, 1, 0.2, 0),
+('Zucchini', '1 cup', 20, 4, 1.5, 0.2),
+('Cauliflower', '1 cup', 25, 5, 2, 0.3),
+('Cabbage', '1 cup', 22, 5, 1, 0.1),
+('Kale', '1 cup', 33, 6, 3, 0.6),
+('Green Beans', '1 cup', 31, 7, 2, 0.2),
+('Peas', '1 cup', 62, 11, 4, 0.2),
+('Corn', '1 cup', 143, 31, 5, 2),
+('Potato', '1 medium', 163, 37, 4, 0.2),
+('Asparagus', '1 cup', 27, 5, 3, 0.2),
+('Eggplant', '1 cup', 35, 9, 1, 0.2),
+('Celery', '1 cup', 16, 3, 0.7, 0.2),
+('Radish', '1 cup', 19, 4, 0.8, 0.1),
+('Beets', '1 cup', 59, 13, 2, 0.2),
+('Brussels Sprouts', '1 cup', 38, 8, 3, 0.3),
+('Oranges', '1 medium', 62, 15, 1.2, 0.2),
+('Strawberries', '1 cup', 49, 12, 1, 0.5),
+('Blueberries', '1 cup', 84, 21, 1, 0.5),
+('Raspberries', '1 cup', 64, 15, 1.5, 0.8),
+('Blackberries', '1 cup', 62, 14, 2, 0.7),
+('Grapes', '1 cup', 104, 27, 1.1, 0.2),
+('Watermelon', '1 cup', 46, 12, 0.9, 0.2),
+('Cantaloupe', '1 cup', 54, 13, 1.3, 0.3),
+('Mango', '1 cup', 99, 25, 1.4, 0.6),
+('Pineapple', '1 cup', 82, 22, 0.9, 0.2),
+('Peaches', '1 medium', 59, 14, 1.4, 0.4),
+('Pears', '1 medium', 101, 27, 0.7, 0.2),
+('Plums', '1 medium', 30, 8, 0.5, 0.2),
+('Cherries', '1 cup', 87, 22, 1.5, 0.3),
+('Kiwi', '1 medium', 42, 10, 0.8, 0.4),
+('Grapefruit', '1 medium', 82, 21, 1.6, 0.3),
+('Lemons', '1 medium', 17, 5, 0.6, 0.2),
+('Limes', '1 medium', 20, 7, 0.5, 0.1),
+('Pomegranate', '1 cup', 144, 33, 3, 2),
+('Ground Beef', '100g', 250, 0, 26, 17),
+('Beef Steak', '100g', 271, 0, 25, 19),
+('Pork Chop', '100g', 231, 0, 27, 12),
+('Ground Turkey', '100g', 189, 0, 27, 9),
+('Chicken Thigh', '100g', 209, 0, 26, 12),
+('Chicken Wing', '100g', 203, 0, 27, 11),
+('Duck Breast', '100g', 201, 0, 23, 11),
+('Lamb', '100g', 294, 0, 25, 21),
+('Cod', '100g', 82, 0, 18, 0.7),
+('Halibut', '100g', 111, 0, 23, 1.5),
+('Tilapia', '100g', 128, 0, 26, 2.7),
+('Mackerel', '100g', 205, 0, 19, 14),
+('Sardines', '100g', 208, 0, 25, 11),
+('Shrimp', '100g', 99, 0.2, 24, 0.3),
+('Crab', '100g', 97, 0, 19, 1.5),
+('Lobster', '100g', 89, 0.5, 19, 0.5),
+('Scallops', '100g', 69, 3, 12, 0.8),
+('Oysters', '100g', 68, 4, 7, 2.5),
+('Cottage Cheese', '1 cup', 163, 6, 28, 2.3),
+('Mozzarella', '100g', 280, 2, 22, 22),
+('Cheddar Cheese', '100g', 402, 1, 25, 33),
+('Parmesan', '100g', 431, 4, 38, 29),
+('Swiss Cheese', '100g', 380, 5, 27, 28),
+('Feta Cheese', '100g', 264, 4, 14, 21),
+('Milk', '1 cup', 149, 12, 8, 8),
+('Skim Milk', '1 cup', 83, 12, 8, 0.2),
+('Almond Milk', '1 cup', 30, 1, 1, 2.5),
+('Soy Milk', '1 cup', 81, 4, 7, 4),
+('Coconut Milk', '1 cup', 552, 13, 5, 57),
+('Butter', '1 tbsp', 102, 0, 0.1, 11.5),
+('Olive Oil', '1 tbsp', 119, 0, 0, 14),
+('Coconut Oil', '1 tbsp', 121, 0, 0, 14),
+('Peanut Butter', '2 tbsp', 188, 6, 8, 16),
+('Almond Butter', '2 tbsp', 196, 6, 7, 18),
+('Cashew Butter', '2 tbsp', 188, 9, 6, 15),
+('Walnuts', '1 oz (28g)', 185, 4, 4, 18),
+('Cashews', '1 oz (28g)', 157, 9, 5, 12),
+('Pistachios', '1 oz (28g)', 159, 8, 6, 13),
+('Pecans', '1 oz (28g)', 196, 4, 3, 20),
+('Hazelnuts', '1 oz (28g)', 178, 5, 4, 17),
+('Macadamia Nuts', '1 oz (28g)', 204, 4, 2, 21),
+('Brazil Nuts', '1 oz (28g)', 186, 4, 4, 19),
+('Peanuts', '1 oz (28g)', 161, 5, 7, 14),
+('Sunflower Seeds', '1 oz (28g)', 164, 6, 5, 14),
+('Pumpkin Seeds', '1 oz (28g)', 158, 3, 9, 14),
+('Chia Seeds', '1 oz (28g)', 138, 12, 4, 9),
+('Flax Seeds', '1 tbsp', 55, 3, 2, 4),
+('Sesame Seeds', '1 oz (28g)', 160, 7, 5, 14),
+('Black Beans', '1 cup cooked', 227, 41, 15, 0.9),
+('Kidney Beans', '1 cup cooked', 225, 40, 15, 0.9),
+('Chickpeas', '1 cup cooked', 269, 45, 15, 4.3),
+('Lentils', '1 cup cooked', 230, 40, 18, 0.8),
+('Pinto Beans', '1 cup cooked', 245, 45, 15, 1.1),
+('Navy Beans', '1 cup cooked', 255, 48, 15, 1.1),
+('White Beans', '1 cup cooked', 254, 45, 17, 0.6),
+('Black-Eyed Peas', '1 cup cooked', 200, 36, 13, 0.8),
+('Soybeans', '1 cup cooked', 298, 17, 29, 15),
+('Edamame', '1 cup', 189, 15, 17, 8),
+('White Pasta', '1 cup cooked', 221, 43, 8, 1.3),
+('Whole Wheat Pasta', '1 cup cooked', 174, 37, 7, 0.8),
+('Barley', '1 cup cooked', 193, 44, 4, 0.7),
+('Bulgur', '1 cup cooked', 151, 34, 6, 0.4),
+('Farro', '1 cup cooked', 220, 47, 8, 1.1),
+('Couscous', '1 cup cooked', 176, 36, 6, 0.3),
+('Bread', '1 slice', 79, 15, 3, 1),
+('Bagel', '1 medium', 289, 56, 11, 2),
+('English Muffin', '1 medium', 132, 26, 4, 1),
+('Tortilla', '1 medium', 146, 24, 4, 3.5),
+('Pita Bread', '1 medium', 165, 33, 5, 1),
+('Hamburger Bun', '1 bun', 120, 22, 4, 2),
+('Hot Dog Bun', '1 bun', 120, 22, 4, 2),
+('Waffle', '1 waffle', 218, 25, 7, 10),
+('Pancake', '1 pancake', 90, 13, 2, 3.5),
+('Cereal', '1 cup', 120, 24, 3, 1.5),
+('Oat Bran', '1 cup cooked', 88, 25, 7, 2),
+('Wheat Germ', '1 tbsp', 27, 4, 2, 0.6),
+('Granola', '1/4 cup', 114, 22, 3, 2.7),
+('Baked Potato', '1 medium', 163, 37, 4, 0.2),
+('French Fries', '1 medium', 365, 63, 4, 17),
+('Potato Chips', '1 oz', 152, 15, 2, 10),
+('Popcorn', '1 cup', 31, 6, 1, 0.4),
+('Crackers', '5 crackers', 82, 13, 2, 2.5),
+('Pretzels', '1 oz', 110, 23, 3, 1),
+('Rice Cakes', '1 cake', 35, 7, 0.7, 0.2),
+('Pizza', '1 slice', 272, 33, 12, 10),
+('Hamburger', '1 burger', 354, 33, 16, 16),
+('Hot Dog', '1 hot dog', 151, 2, 5, 14),
+('Sandwich', '1 sandwich', 350, 40, 20, 12),
+('Taco', '1 taco', 226, 20, 14, 10),
+('Burrito', '1 burrito', 456, 60, 22, 14),
+('Sushi Roll', '1 roll', 200, 38, 8, 2),
+('Ramen', '1 package', 380, 54, 10, 14),
+('Soup', '1 cup', 90, 12, 4, 2.5),
+('Chili', '1 cup', 267, 32, 17, 8),
+('Pasta Sauce', '1/2 cup', 60, 10, 2, 2),
+('Hummus', '2 tbsp', 50, 4, 2, 3),
+('Salsa', '2 tbsp', 10, 2, 0.3, 0.1),
+('Guacamole', '2 tbsp', 45, 3, 1, 4),
+('Mayonnaise', '1 tbsp', 94, 0.1, 0.1, 10),
+('Mustard', '1 tsp', 3, 0.6, 0.2, 0.2),
+('Ketchup', '1 tbsp', 15, 4, 0.2, 0),
+('Soy Sauce', '1 tbsp', 8, 1, 1, 0),
+('Vinegar', '1 tbsp', 3, 0, 0, 0),
+('Honey', '1 tbsp', 64, 17, 0.1, 0),
+('Maple Syrup', '1 tbsp', 52, 13, 0, 0),
+('Sugar', '1 tsp', 16, 4, 0, 0),
+('Brown Sugar', '1 tsp', 17, 4, 0, 0),
+('Chocolate Bar', '1 bar', 250, 27, 3, 15),
+('Dark Chocolate', '1 oz', 155, 13, 2, 9),
+('Milk Chocolate', '1 oz', 152, 16, 2, 9),
+('Ice Cream', '1/2 cup', 137, 16, 2, 7),
+('Frozen Yogurt', '1/2 cup', 115, 23, 3, 2),
+('Yogurt', '1 cup', 149, 11, 13, 4),
+('Protein Bar', '1 bar', 200, 20, 20, 6),
+('Energy Bar', '1 bar', 250, 45, 5, 8),
+('Cookie', '1 cookie', 78, 11, 1, 3.5),
+('Brownie', '1 brownie', 132, 18, 1, 6),
+('Cake', '1 slice', 235, 38, 3, 8),
+('Pie', '1 slice', 277, 42, 3, 12),
+('Donut', '1 donut', 195, 25, 3, 10),
+('Muffin', '1 muffin', 265, 40, 5, 9),
+('Coffee', '1 cup', 2, 0, 0.3, 0),
+('Tea', '1 cup', 2, 0, 0, 0),
+('Orange Juice', '1 cup', 112, 26, 1.7, 0.5),
+('Apple Juice', '1 cup', 114, 28, 0.3, 0.3),
+('Cranberry Juice', '1 cup', 116, 31, 0.4, 0.3),
+('Grape Juice', '1 cup', 152, 38, 1, 0.3),
+('Soda', '1 can', 150, 39, 0, 0),
+('Energy Drink', '1 can', 110, 28, 0, 0),
+('Beer', '12 oz', 153, 13, 1.6, 0),
+('Wine', '5 oz', 123, 4, 0.1, 0),
+('Wine Red', '5 oz', 125, 4, 0.1, 0),
+('Wine White', '5 oz', 121, 4, 0.1, 0);
+
+-- ============================================
+-- Verify Tables Created
+-- ============================================
+
+-- Run these to verify:
+-- \dt                    -- List all tables
+-- SELECT * FROM food_items LIMIT 5;
+-- SELECT * FROM user_meals;
+-- SELECT * FROM user_goals;
+
