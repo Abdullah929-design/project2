@@ -89,28 +89,8 @@ const MealTracker = ({ userId }) => {
     meal_type: 'breakfast'
   });
 
-  // Fetch meals and goals
-  useEffect(() => {
-  if (userId) {
-    fetchMeals();
-    fetchUserGoals();
-  }
-}, [userId, selectedDate, fetchMeals, fetchUserGoals]);
-
-
-  // Fetch food items when search query changes
-  useEffect(() => {
-  const delayDebounceFn = setTimeout(() => {
-    if (searchQuery.length > 2) {
-      fetchFoodItems();
-    }
-  }, 300);
-
-  return () => clearTimeout(delayDebounceFn);
-}, [searchQuery, fetchFoodItems]);
-
-
-  const fetchMeals = async () => {
+  // ---- FIXED: useCallback-stable fetches ----
+  const fetchMeals = React.useCallback(async () => {
     try {
       setLoading(true);
       const dateStr = format(selectedDate, 'yyyy-MM-dd');
@@ -124,20 +104,9 @@ const MealTracker = ({ userId }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedDate, userId]);
 
-  const fetchFoodItems = async () => {
-    try {
-      const response = await axios.get(`${API_BASE}/foods`, {
-        params: { search: searchQuery }
-      });
-      setFoodItems(response.data);
-    } catch (error) {
-      console.error('Error fetching food items:', error);
-    }
-  };
-
-  const fetchUserGoals = async () => {
+  const fetchUserGoals = React.useCallback(async () => {
     try {
       const response = await axios.get(`${API_BASE}/goals`, {
         params: { user_id: userId }
@@ -148,7 +117,35 @@ const MealTracker = ({ userId }) => {
     } catch (error) {
       console.error('Error fetching user goals:', error);
     }
-  };
+  }, [userId]);
+
+  const fetchFoodItems = React.useCallback(async () => {
+    try {
+      const response = await axios.get(`${API_BASE}/foods`, {
+        params: { search: searchQuery }
+      });
+      setFoodItems(response.data);
+    } catch (error) {
+      console.error('Error fetching food items:', error);
+    }
+  }, [searchQuery]);
+
+  // ---- Clean useEffect with correct deps ----
+  React.useEffect(() => {
+    if (userId) {
+      fetchMeals();
+      fetchUserGoals();
+    }
+  }, [userId, selectedDate, fetchMeals, fetchUserGoals]);
+
+  React.useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (searchQuery.length > 2) {
+        fetchFoodItems();
+      }
+    }, 300);
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery, fetchFoodItems]);
 
   const fetchDailyReport = async (date) => {
     try {
